@@ -19,22 +19,26 @@ function distanceBetweenTwoLists(list1, list2) {
  * @param {Array<Number>} list2
  */
 function similarityScore(list1, list2) {
-  list2.sort();
+  // Create a frequency map for list2
+  const frequencyMap = new Map();
+  for (const num of list2) {
+    frequencyMap.set(num, (frequencyMap.get(num) || 0) + 1);
+  }
+
   let result = 0;
   const start = performance.now();
-  list1.forEach((el1) => {
-    const firstIndex = list2.indexOf(el1);
-    let counter = 0;
-    if (firstIndex != -1) {
-      for (let i = firstIndex; i < list2.length; i++) {
-        if (list2[i] !== el1) {
-          break;
-        }
-        counter++;
-      }
+
+  // Single pass through list1
+  for (const el1 of list1) {
+    const count = frequencyMap.get(el1) || 0;
+    result += el1 * count;
+
+    // Optionally reduce the count to handle multiple occurrences
+    if (count > 0) {
+      frequencyMap.set(el1, Math.max(0, count - 1));
     }
-    result += el1 * counter;
-  });
+  }
+
   console.log("duration :", performance.now() - start, " ms");
   return result;
 }
